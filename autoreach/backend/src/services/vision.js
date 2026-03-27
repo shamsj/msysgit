@@ -3,7 +3,24 @@ const fs = require('fs');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Mock response for demo/preview when no real API key is set
+function getMockResponse() {
+  const cars = [
+    { make: 'Toyota', model: 'Camry', year: 2021, trim: 'SE', condition: 'good', color: 'Silver', estimated_mileage: '25,000 - 35,000', confidence: 0.87 },
+    { make: 'Honda', model: 'Civic', year: 2022, trim: 'Sport', condition: 'excellent', color: 'Blue', estimated_mileage: '10,000 - 20,000', confidence: 0.92 },
+    { make: 'Ford', model: 'F-150', year: 2020, trim: 'XLT', condition: 'good', color: 'White', estimated_mileage: '30,000 - 45,000', confidence: 0.84 },
+    { make: 'BMW', model: '3 Series', year: 2023, trim: '330i', condition: 'excellent', color: 'Black', estimated_mileage: '5,000 - 15,000', confidence: 0.90 },
+  ];
+  return cars[Math.floor(Math.random() * cars.length)];
+}
+
 async function identifyVehicle(imagePath) {
+  // Use mock data if no real API key is configured
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'mock') {
+    console.log('Using mock vehicle identification (no OPENAI_API_KEY set)');
+    return getMockResponse();
+  }
+
   const imageBuffer = fs.readFileSync(imagePath);
   const base64Image = imageBuffer.toString('base64');
   const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
